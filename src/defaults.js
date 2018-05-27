@@ -12,6 +12,9 @@ export const tableProps = {
 export const modalProps = {
     showCreateModal: false,
     showEditModal: false,
+    showDeleteModal: false,
     editData: {},
     editModalTitle: '',
+    deleteSubject: '',
+    idToDelete: 0
 }

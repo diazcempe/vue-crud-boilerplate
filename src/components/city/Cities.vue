@@ -3,7 +3,7 @@
         <h1>Cities</h1>
 
         <!-- Button to open up ADD modal box -->
-        <b-button variant="primary" @click.stop="showCreateModal = true">+ New City</b-button>
+        <b-button variant="success" size="md" @click.stop="showCreateModal = true">+ New City</b-button>
         
         <!-- Table Control -->
         <b-container fluid>
@@ -37,18 +37,17 @@
             <template slot="actions" slot-scope="row">
 
                 <!-- Button to open up EDIT, DELETE modal box -->
-                <b-button size="sm" variant="warning" @click.stop="openEditModal(row.item)">Edit</b-button>
-                <b-button size="sm" variant="danger" @click.stop="remove(row.item.id)">Delete</b-button>
+                <b-button size="sm" variant="outline-warning" @click.stop="openEditModal(row.item)">Edit</b-button>
+                <b-button size="sm" variant="outline-danger" @click.stop="openDeleteModal(row.item.firebaseId, row.item.name)">Delete</b-button>
 
-                <!-- Button to open up Details Row -->
+                <!-- Button to open up ROW DETAILS -->
                 <b-button size="sm" variant="link" @click.stop="row.toggleDetails">
                     {{ row.detailsShowing ? 'Hide' : 'Show' }} Details
                 </b-button>
 
             </template>
             
-            <!-- Reserved slot for row details -->
-            <!-- will be printed for every row -->
+            <!-- Reserved slot for ROW DETAILS. Will be printed for every row. -->
             <template slot="row-details" slot-scope="row">
                 <b-card class="text-left">
                     <p>Name: {{ row.item.name }}</p>
@@ -66,14 +65,18 @@
         
         <!-- MODAL BOXES -->        
         <!-- ADD modal box (pop-up) -->    
-        <!-- id is needed because we use v-b-modal, which will identify the modal by id, to open up this modal -->
-        <b-modal v-model="showCreateModal" title="Add New City">
+        <b-modal v-model="showCreateModal" title="Add New City" hide-footer>
             <app-city-create @cityAdded="refresh"></app-city-create>
         </b-modal>
 
         <!-- EDIT modal box (pop-up) -->    
         <b-modal v-model="showEditModal" :title="editModalTitle">
             <app-city-edit :editData="editData"></app-city-edit>
+        </b-modal>
+        
+        <!-- DELETE modal box (pop-up) -->    
+        <b-modal v-model="showDeleteModal" hide-header @ok="remove(idToDelete)">
+            Are you sure you want to delete {{ deleteSubject }} city ?
         </b-modal>
     </div>
 </template>
@@ -104,14 +107,25 @@ export default {
 
             // open up edit modal box
             this.showEditModal = !this.showEditModal; 
+        },        
+        openDeleteModal(id, name) {
+            this.deleteSubject = name;
+            this.idToDelete = id;
+
+            // open up delete modal box
+            this.showDeleteModal = !this.showDeleteModal; 
         },
         fetch() {
             return axios.get('/cities.json')
                         .then(res => {
                             const resultArray = [];
                             for (let key in res.data){
+                                // add firebaseId prop to the data for delete/edit purposes
+                                res.data[key].firebaseId = key;
                                 resultArray.push(res.data[key]);
                             };
+
+                            // Populate the table 
                             this.items = resultArray;
                             this.totalRows = this.items.length;
                         })
@@ -122,7 +136,9 @@ export default {
             this.fetch().then(res => this.showCreateModal = this.showEditModal = false );
         },
         remove(id){
-            console.log(id);
+            axios.delete(`/cities/${id}.json`)
+                .then(res => this.fetch())
+                .catch(error => console.log(error))
         }
     },
     components: {
