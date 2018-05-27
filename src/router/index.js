@@ -3,6 +3,7 @@ import Router from 'vue-router'
 import Hello from '@/components/Hello'
 import Cities from '@/components/city/Cities'
 import CityCreate from '@/components/city/CityCreate'
+import Regions from '@/components/region/Regions'
 
 Vue.use(Router)
 
@@ -19,9 +20,9 @@ export default new Router({
       component: Cities
     },
     {
-      path: '/cities/create',
-      name: 'CityCreate',
-      component: CityCreate
+      path: '/regions',
+      name: 'Regions',
+      component: Regions
     }
   ]
 })

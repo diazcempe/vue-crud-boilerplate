@@ -1,14 +1,11 @@
 <template>
     <b-container fluid>
         <h1>Cities</h1>
+        <br>
         
         <!-- Table Control -->
         <b-container fluid>
-            <b-row>                
-                <b-col md="8" class="my-1">     
-                    <!-- Button to open up ADD modal box -->
-                    <b-button variant="success" size="md" @click.stop="showCreateModal = true">+ New City</b-button>
-                </b-col>                
+            <b-row>                       
                 <b-col md="4" class="my-1">
                     <b-input-group>
                         <b-form-input v-model="filter" placeholder="Type to Search" />
@@ -16,13 +13,18 @@
                             <b-btn :disabled="!filter" @click="filter = ''">Clear</b-btn>
                         </b-input-group-append>
                     </b-input-group>
-                </b-col>
+                </b-col>  
+                <b-col md="7" class="my-1"></b-col>
+                <b-col md="1" class="my-1 float-right">     
+                    <!-- Button to open up ADD modal box -->
+                    <b-button variant="success" size="md" @click.stop="showCreateModal = true">+ New City</b-button>
+                </b-col>       
             </b-row>
         </b-container>
         
         <br>
         <!-- The Table -->
-        <b-table show-empty stacked="md" 
+        <b-table show-empty hover outlined stacked="md"
             :items="items"
             :fields="fields"
             :filter="filter"
@@ -33,7 +35,7 @@
             <template slot="actions" slot-scope="row">
 
                 <!-- Button to open up EDIT, DELETE modal box -->
-                <b-button size="sm" variant="outline-warning" @click.stop="openEditModal(row.item.firebaseId, row.item.name)">Edit</b-button>
+                <b-button size="sm" variant="outline-info" @click.stop="openEditModal(row.item.firebaseId, row.item.name)">Edit</b-button>
                 <b-button size="sm" variant="outline-danger" @click.stop="openDeleteModal(row.item.firebaseId, row.item.name)">Delete</b-button>
 
                 <!-- Button to open up ROW DETAILS -->
@@ -94,6 +96,7 @@ export default {
             fields: [
                 { key: 'id', sortable: false },
                 { key: 'name', sortable: true },
+                { key: 'region', sortable: true },
                 { key: 'population', sortable: true },
                 { key: 'actions', label: 'Actions' }
             ],
@@ -119,14 +122,12 @@ export default {
                         .then(res => {
                             const resultArray = [];
                             for (let key in res.data){
-                                // add firebaseId prop to the data for delete/edit purposes
-                                res.data[key].firebaseId = key;
+                                res.data[key].firebaseId = key; // add firebaseId prop to the data for delete/edit purposes
                                 resultArray.push(res.data[key]);
                             };
 
-                            // Populate the table 
                             this.items = resultArray;
-                            this.totalRows = this.items.length;
+                            this.totalRows = this.items.length; // for table pagination
                         })
                         .catch(error => console.log(error));
         },
@@ -134,18 +135,18 @@ export default {
             // refresh table data then close modal box
             this.fetch().then(res => this.showCreateModal = this.showEditModal = false );
         },
-        remove(id){
-            axios.delete(`/cities/${id}.json`)
+        remove(firebaseId){
+            axios.delete(`/cities/${firebaseId}.json`)
                 .then(res => this.fetch())
                 .catch(error => console.log(error))
         }
     },
+    created() {
+        this.fetch();
+    },
     components: {
         appCityCreate: CityCreate,
         appCityEdit: CityEdit
-    },
-    created() {
-        this.fetch();
     }
 }
 </script>
