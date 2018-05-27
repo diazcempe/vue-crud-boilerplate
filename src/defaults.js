@@ -13,7 +13,7 @@ export const modalProps = {
     showCreateModal: false,
     showEditModal: false,
     showDeleteModal: false,
-    editData: {},
+    idToEdit: '',
     editModalTitle: '',
     deleteSubject: '',
     idToDelete: 0

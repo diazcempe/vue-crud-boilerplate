@@ -1,43 +1,39 @@
 <template>
-    <div>
+    <b-container fluid>
         <h1>Cities</h1>
-
-        <!-- Button to open up ADD modal box -->
-        <b-button variant="success" size="md" @click.stop="showCreateModal = true">+ New City</b-button>
         
         <!-- Table Control -->
         <b-container fluid>
             <b-row>                
-                <b-col md="6" class="my-1">                    
-                    <b-form-group horizontal label="Filter" class="mb-0">
-                        <b-input-group>
-                            <b-form-input v-model="filter" placeholder="Type to Search" />
-                            <b-input-group-append>
-                                <b-btn :disabled="!filter" @click="filter = ''">Clear</b-btn>
-                            </b-input-group-append>
-                        </b-input-group>
-                    </b-form-group>
+                <b-col md="8" class="my-1">     
+                    <!-- Button to open up ADD modal box -->
+                    <b-button variant="success" size="md" @click.stop="showCreateModal = true">+ New City</b-button>
                 </b-col>                
-                <b-col md="6" class="my-1">
-                    <b-form-group horizontal label="Per page" class="mb-0">
-                        <b-form-select :options="pageOptions" v-model="perPage" />
-                    </b-form-group>
+                <b-col md="4" class="my-1">
+                    <b-input-group>
+                        <b-form-input v-model="filter" placeholder="Type to Search" />
+                        <b-input-group-append>
+                            <b-btn :disabled="!filter" @click="filter = ''">Clear</b-btn>
+                        </b-input-group-append>
+                    </b-input-group>
                 </b-col>
             </b-row>
         </b-container>
-
+        
+        <br>
         <!-- The Table -->
         <b-table show-empty stacked="md" 
+            :items="items"
+            :fields="fields"
+            :filter="filter"
             :sort-by.sync="sortBy"
             :sort-desc.sync="sortDesc"
             :current-page="currentPage"
-            :per-page="perPage"
-            :items="items"
-            :fields="fields">
+            :per-page="perPage">
             <template slot="actions" slot-scope="row">
 
                 <!-- Button to open up EDIT, DELETE modal box -->
-                <b-button size="sm" variant="outline-warning" @click.stop="openEditModal(row.item)">Edit</b-button>
+                <b-button size="sm" variant="outline-warning" @click.stop="openEditModal(row.item.firebaseId, row.item.name)">Edit</b-button>
                 <b-button size="sm" variant="outline-danger" @click.stop="openDeleteModal(row.item.firebaseId, row.item.name)">Delete</b-button>
 
                 <!-- Button to open up ROW DETAILS -->
@@ -58,6 +54,9 @@
 
         <!-- Table Pagination -->
         <b-row>
+            <b-col md="1" class="my-1">
+                <b-form-select :options="pageOptions" v-model="perPage" />
+            </b-col>
             <b-col md="6" class="my-1">
                 <b-pagination :total-rows="totalRows" :per-page="perPage" v-model="currentPage" class="my-0" />
             </b-col>
@@ -70,15 +69,15 @@
         </b-modal>
 
         <!-- EDIT modal box (pop-up) -->    
-        <b-modal v-model="showEditModal" :title="editModalTitle">
-            <app-city-edit :editData="editData"></app-city-edit>
+        <b-modal v-model="showEditModal" :title="editModalTitle" hide-footer>
+            <app-city-edit :idToEdit="idToEdit" @cityEdited="refresh"></app-city-edit>
         </b-modal>
         
         <!-- DELETE modal box (pop-up) -->    
-        <b-modal v-model="showDeleteModal" hide-header @ok="remove(idToDelete)">
+        <b-modal v-model="showDeleteModal" @ok="remove(idToDelete)" hide-header>
             Are you sure you want to delete {{ deleteSubject }} city ?
         </b-modal>
-    </div>
+    </b-container>
 </template>
 
 <script>
@@ -101,9 +100,9 @@ export default {
         }
     },
     methods: {
-        openEditModal(item) {
-            this.editModalTitle = `Edit ${item.name}`;
-            this.editData = item;
+        openEditModal(id, name) {
+            this.editModalTitle = `Edit ${name}`;
+            this.idToEdit = id;
 
             // open up edit modal box
             this.showEditModal = !this.showEditModal; 
