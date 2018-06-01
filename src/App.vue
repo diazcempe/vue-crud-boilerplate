@@ -18,12 +18,67 @@ export default {
 </script>
 
 <style>
-#app {
-    font-family: 'Avenir', Helvetica, Arial, sans-serif;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-    text-align: left;
-    color: #2c3e50;
-    margin-top: 10px;
-}
+    #app {
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        text-align: left;
+        color: #2c3e50;
+        margin-top: 10px;
+    }
+
+    .form-group {
+        margin-bottom: 2rem;
+    }
+
+    .form-group--error {
+        animation-name: shakeError;
+        animation-fill-mode: forward;
+        animation-duration: .6s;
+        animation-timing-function: ease-in-out;
+    }
+
+    .form-group--error > label {
+        color: #f04124;
+    }
+
+    .form-group--error input, .form-group--error textarea, .form-group--error input:focus, .form-group--error input:hover {
+        border-color: #f79483;
+    }
+
+    .form-group--error + .error {
+        display: block;
+        color: #f57f6c;
+    }
+
+    .form-group--loading .form__input {
+    border-image-slice: 1;
+    animation: loading-frame 1s infinite; }
+
+    .error {
+        font-size: 0.75rem;
+        line-height: 1;
+        display: none;
+        margin-left: 14px;
+        margin-top: -1.6875rem;
+        margin-bottom: 0.9375rem;
+    }
+
+    @keyframes shakeError {
+    0% {
+        transform: translateX(0); }
+    15% {
+        transform: translateX(0.375rem); }
+    30% {
+        transform: translateX(-0.375rem); }
+    45% {
+        transform: translateX(0.375rem); }
+    60% {
+        transform: translateX(-0.375rem); }
+    75% {
+        transform: translateX(0.375rem); }
+    90% {
+        transform: translateX(-0.375rem); }
+    100% {
+        transform: translateX(0); } 
+    }
 </style>
