@@ -1,6 +1,6 @@
 <template>
     <div>
-        <b-form @submit.stop.prevent="onSubmit" @reset.stop.prevent="resetForm" v-if="show">
+        <b-form @submit.prevent="onSubmit" @reset.prevent="resetForm" v-if="show">
             <div class="form-group" :class="{'form-group--error': $v.form.id.$error, 'form-group--loading': $v.form.id.$pending}">
                 <label for="city-create-id">ID</label>
                 <input type="number" class="form-control" id="city-create-id" v-model.trim.lazy.number="$v.form.id.$model" @blur="$v.form.id.$touch()">
@@ -43,8 +43,10 @@
 <script>
 import axios from '../../axios-custom'
 import { required, numeric, minValue } from 'vuelidate/lib/validators'
+import { formMixin } from './mixin'
 
 export default {
+    mixins: [formMixin],
     props: {
         idToEdit: {
             type: String
@@ -52,17 +54,9 @@ export default {
     },
     data() {
         return {
-            show: true,
-            regionOptions: [],
             origData: {}, // for form reset
-            form: {
-                id: 0,
-                name: '',
-                region: '',
-                population: 0
-            }
         };
-    },
+    },      
     validations: {
         form: {
             id: {
@@ -94,8 +88,8 @@ export default {
     },
     watch: {
         idToEdit() {
+            this.populateRegionDropdown();
             this.getData();
-            this.fetchRegions();
         }
     },
     methods: {
@@ -108,20 +102,6 @@ export default {
                 })
                 .catch(error => console.log(error));
         },        
-        fetchRegions() {
-            axios.get('/regions.json')
-                .then(res => {
-                    this.regionOptions = [];
-                    const resultArray = [];
-                    for (let key in res.data){                                
-                        res.data[key].firebaseId = key; // add firebaseId prop to the data for delete/edit purposes
-                        resultArray.push(res.data[key]);
-                    };
-
-                    this.regionOptions = resultArray.map(d => ({ value: d.name, text: d.name }))
-                })
-                .catch(error => console.log(error));
-        },
         onSubmit() {
             axios.put(`/cities/${this.idToEdit}.json`, this.form)
                 .then(res => {

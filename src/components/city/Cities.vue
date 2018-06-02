@@ -67,12 +67,12 @@
         <!-- MODAL BOXES -->        
         <!-- ADD modal box (pop-up) -->    
         <b-modal v-model="showCreateModal" title="Add New City" hide-footer>
-            <app-city-create @cityAdded="refresh"></app-city-create>
+            <app-city-create @cityAdded="refresh(this.fetchUrl)"></app-city-create>
         </b-modal>
 
         <!-- EDIT modal box (pop-up) -->    
         <b-modal v-model="showEditModal" :title="editModalTitle" hide-footer>
-            <app-city-edit :idToEdit="idToEdit" @cityEdited="refresh"></app-city-edit>
+            <app-city-edit :idToEdit="idToEdit" @cityEdited="refresh(this.fetchUrl)"></app-city-edit>
         </b-modal>
         
         <!-- DELETE modal box (pop-up) -->    
@@ -86,13 +86,17 @@
 import axios from '../../axios-custom'
 import CityCreate from './CityCreate'
 import CityEdit from './CityEdit'
-import { tableProps, modalProps } from '../../defaults'
+import { tableMixin, modalPropsMixin } from '../../globalMixin'
 
 export default {
+    mixins: [tableMixin, modalPropsMixin],
+    components: {
+        appCityCreate: CityCreate,
+        appCityEdit: CityEdit
+    },
     data() {
         return {
-            ...tableProps,
-            ...modalProps,
+            fetchUrl: '/cities.json',
             fields: [
                 { key: 'id', sortable: false },
                 { key: 'name', sortable: true },
@@ -103,50 +107,14 @@ export default {
         }
     },
     methods: {
-        openEditModal(id, name) {
-            this.editModalTitle = `Edit ${name}`;
-            this.idToEdit = id;
-
-            // open up edit modal box
-            this.showEditModal = !this.showEditModal; 
-        },        
-        openDeleteModal(id, name) {
-            this.deleteSubject = name;
-            this.idToDelete = id;
-
-            // open up delete modal box
-            this.showDeleteModal = !this.showDeleteModal; 
-        },
-        fetch() {
-            return axios.get('/cities.json')
-                        .then(res => {
-                            const resultArray = [];
-                            for (let key in res.data){
-                                res.data[key].firebaseId = key; // add firebaseId prop to the data for delete/edit purposes
-                                resultArray.push(res.data[key]);
-                            };
-
-                            this.items = resultArray;
-                            this.totalRows = this.items.length; // for table pagination
-                        })
-                        .catch(error => console.log(error));
-        },
-        refresh() {
-            // refresh table data then close modal box
-            this.fetch().then(res => this.showCreateModal = this.showEditModal = false );
-        },
         remove(firebaseId){
             axios.delete(`/cities/${firebaseId}.json`)
-                .then(res => this.fetch())
+                .then(res => this.populateTable(this.fetchUrl))
                 .catch(error => console.log(error))
         }
     },
     created() {
-        this.fetch();
-    },
-    components: {
-        appCityCreate: CityCreate,
-        appCityEdit: CityEdit
+        this.populateTable(this.fetchUrl);
     }
 }
 </script>

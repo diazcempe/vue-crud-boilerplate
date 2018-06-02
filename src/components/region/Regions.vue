@@ -86,13 +86,12 @@
 import axios from '../../axios-custom'
 import RegionCreate from './RegionCreate'
 import RegionEdit from './RegionEdit'
-import { tableProps, modalProps } from '../../defaults'
+import { tableMixin, modalPropsMixin } from '../../globalMixin'
 
 export default {
+    mixins: [tableMixin, modalPropsMixin],
     data() {
         return {
-            ...tableProps,
-            ...modalProps,
             fields: [
                 { key: 'id', sortable: false },
                 { key: 'name', sortable: true },
@@ -103,37 +102,9 @@ export default {
         }
     },
     methods: {
-        openEditModal(id, name) {
-            this.editModalTitle = `Edit ${name}`;
-            this.idToEdit = id;
-
-            // open up edit modal box
-            this.showEditModal = !this.showEditModal; 
-        },        
-        openDeleteModal(id, name) {
-            this.deleteSubject = name;
-            this.idToDelete = id;
-
-            // open up delete modal box
-            this.showDeleteModal = !this.showDeleteModal; 
-        },
-        fetch() {
-            return axios.get('/regions.json')
-                        .then(res => {
-                            const resultArray = [];
-                            for (let key in res.data){                         
-                                res.data[key].firebaseId = key; // add firebaseId prop to the data for delete/edit purposes
-                                resultArray.push(res.data[key]);
-                            };
-
-                            this.items = resultArray;
-                            this.totalRows = this.items.length; // for table pagination
-                        })
-                        .catch(error => console.log(error));
-        },
         refresh() {
             // refresh table data then close modal box
-            this.fetch().then(res => this.showCreateModal = this.showEditModal = false );
+            this.populateTable('/regions.json').then(res => this.showCreateModal = this.showEditModal = false );
         },
         remove(firebaseId){
             axios.delete(`/regions/${firebaseId}.json`)
@@ -142,7 +113,7 @@ export default {
         }
     },
     created() {
-        this.fetch();
+        this.populateTable('/regions.json');
     },
     components: {
         appRegionCreate: RegionCreate,

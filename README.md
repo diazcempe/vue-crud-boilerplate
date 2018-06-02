@@ -1,7 +1,7 @@
-# vue-crud-boilerplate
+# vue-crud-template
 
 > UNDER CONSTRUCTION !!!
-> Vue.js CRUD boilerplate
+> Vue.js CRUD template
 
 ## Build Setup
 
@@ -20,3 +20,22 @@ npm run build --report
 ```
 
 For detailed explanation on how things work, checkout the [guide](http://vuejs-templates.github.io/webpack/) and [docs for vue-loader](http://vuejs.github.io/vue-loader).
+
+# Libraries
+
+## bootstrap-vue
+https://bootstrap-vue.js.org/
+
+## vuelidate
+Form Validation
+https://monterail.github.io/vuelidate/
+
+## nprogress
+Loading Indicator
+Github: https://github.com/rstacruz/nprogress
+How to: 
+https://scotch.io/tutorials/add-loading-indicators-to-your-vuejs-application
+
+# To Do
+- Loading indicator
+- Column filter
