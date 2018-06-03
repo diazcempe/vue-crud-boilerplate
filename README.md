@@ -1,8 +1,8 @@
 # vue-crud-template
 
-> UNDER CONSTRUCTION !!!
+> UNDER CONSTRUCTION !!
 
-> Vue.js CRUD template
+> This template is using [Bootstrap Vue](https://bootstrap-vue.js.org/)
 
 ## Build Setup
 
@@ -58,7 +58,6 @@ https://github.com/Justineo/vue-awesome
 # To Do
 - Table: Column filter
 - Form: Loading indicator
-- ~~Form: async dropdown population~~
-- ~~Adding font-awesome/glyphicon to the project~~
+- Form: Submit status alert 
 - Vuex
 - Find a way to put vuelidate's validations to a mixin. Default behavior: override instead of mixed in.

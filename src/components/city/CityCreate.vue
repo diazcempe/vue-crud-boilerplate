@@ -2,8 +2,8 @@
     <div>
         <b-form @submit.prevent="onSubmit" @reset.prevent="resetForm" v-if="show">            
             <div class="form-group" :class="{'form-group--error': $v.form.id.$error, 'form-group--loading': $v.form.id.$pending}">
-                <label for="city-create-id">ID</label>
-                <input type="number" class="form-control" id="city-create-id" v-model.trim.lazy.number="$v.form.id.$model" @blur="$v.form.id.$touch()">
+                <label for="city-id">ID</label>
+                <input type="number" class="form-control" id="city-id" v-model.trim.lazy.number="$v.form.id.$model" @blur="$v.form.id.$touch()">
             </div>
             <div class="error" v-if="!$v.form.id.required">This field must not be empty.</div>
             <div class="error" v-if="!$v.form.id.unique">ID is already in the database. Please input different ID.</div>
@@ -11,15 +11,15 @@
             <div class="error" v-if="!$v.form.id.minValue">ID must be greater than 0.</div>
             
             <div class="form-group" :class="{'form-group--error': $v.form.name.$error, 'form-group--loading': $v.form.name.$pending}">
-                <label for="city-create-name">City Name</label>
-                <input type="text" class="form-control" id="city-create-name" v-model.trim.lazy="$v.form.name.$model" @blur="$v.form.name.$touch()">
+                <label for="city-name">City Name</label>
+                <input type="text" class="form-control" id="city-name" v-model.trim.lazy="$v.form.name.$model" @blur="$v.form.name.$touch()">
             </div>
             <div class="error" v-if="!$v.form.name.required">This field must not be empty.</div>
             <div class="error" v-if="!$v.form.name.unique">City is already in the database. Please input different city name.</div>
             
             <div class="form-group" :class="{'form-group--error': $v.form.region.$error}">
-                <label for="city-create-region">Region</label>
-                <v-select :options="regionOptions" @search="onRegionSearch" v-model.trim="$v.form.region.$model" @blur="$v.form.region.$touch()" >
+                <label for="city-region">Region</label>
+                <v-select :options="regionOptions" @search="onRegionSearch" :on-change="onChange" v-model.trim="$v.form.region.$model"  @blur="$v.form.region.$touch()" >
                     <template slot="no-options">
                         type to search Region..
                     </template>
@@ -28,8 +28,8 @@
             <div class="error" v-if="!$v.form.region.required">This field must not be empty.</div>
             
             <div class="form-group" :class="{'form-group--error': $v.form.population.$error, 'form-group--loading': $v.form.population.$pending}">
-                <label for="city-create-population">Population</label>
-                <input type="number" class="form-control" id="city-create-population" v-model.trim.lazy.number="$v.form.population.$model" @blur="$v.form.population.$touch()">
+                <label for="city-population">Population</label>
+                <input type="number" class="form-control" id="city-population" v-model.trim.lazy.number="$v.form.population.$model" @blur="$v.form.population.$touch()">
             </div>
             <div class="error" v-if="!$v.form.population.required">This field must not be empty.</div>
             <div class="error" v-if="!$v.form.population.numeric">Only numeric (non-negative) value is allowed.</div>
@@ -79,21 +79,6 @@ export default {
         }
     },
     methods: {
-        // Async AJAX Dropdown search
-        onRegionSearch(search, loading) {   
-            loading(true);
-            axios.get('/regions.json?orderBy="name"&startAt="' + search + '"&endAt="' + search + '\uf8ff' + '"')
-                .then(res => {
-                    const resultArray = [];
-                    for (let key in res.data){                                
-                        res.data[key].firebaseId = key; // add firebaseId prop to the data for delete/edit purposes
-                        resultArray.push(res.data[key]);
-                    };
-
-                    this.regionOptions = resultArray.map(region => ({value: region.name, label: region.name }));
-                    loading(false);
-                })
-        },
         onSubmit() {
             axios.post('/cities.json', this.form)
                 .then(res => {
@@ -107,7 +92,7 @@ export default {
             this.form.name = '';
             this.form.region = '';
             this.form.population = 0;
-        }
+        }        
     },
     created() {
         // Enable this to pre-populated the region dropdown instead of using AJAX search

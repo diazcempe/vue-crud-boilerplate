@@ -2,8 +2,8 @@
     <div>
         <b-form @submit.prevent="onSubmit" @reset.prevent="resetForm" v-if="show">
             <div class="form-group" :class="{'form-group--error': $v.form.id.$error, 'form-group--loading': $v.form.id.$pending}">
-                <label for="city-create-id">ID</label>
-                <input type="number" class="form-control" id="city-create-id" v-model.trim.lazy.number="$v.form.id.$model" @blur="$v.form.id.$touch()">
+                <label for="city-id">ID</label>
+                <input type="number" class="form-control" id="city-id" v-model.trim.lazy.number="$v.form.id.$model" @blur="$v.form.id.$touch()">
             </div>
             <div class="error" v-if="!$v.form.id.required">This field must not be empty.</div>
             <div class="error" v-if="!$v.form.id.unique">ID is already in the database. Please input different ID.</div>
@@ -11,23 +11,25 @@
             <div class="error" v-if="!$v.form.id.minValue">ID must be greater than 0.</div>
             
             <div class="form-group" :class="{'form-group--error': $v.form.name.$error, 'form-group--loading': $v.form.name.$pending}">
-                <label for="city-create-name">City Name</label>
-                <input type="text" class="form-control" id="city-create-name" v-model.trim.lazy="$v.form.name.$model" @blur="$v.form.name.$touch()">
+                <label for="city-name">City Name</label>
+                <input type="text" class="form-control" id="city-name" v-model.trim.lazy="$v.form.name.$model" @blur="$v.form.name.$touch()">
             </div>
             <div class="error" v-if="!$v.form.name.required">This field must not be empty.</div>
             <div class="error" v-if="!$v.form.name.unique">City is already in the database. Please input different city name.</div>
-            
+
             <div class="form-group" :class="{'form-group--error': $v.form.region.$error}">
-                <label for="city-create-region">Region</label>
-                <select class="form-control" id="city-create-region" v-model.trim.lazy="$v.form.region.$model">
-                    <option v-for="(region, index) in regionOptions" :key="region.value" :value="region.value" :selected="index === 0">{{ region.text }}</option>
-                </select>
+                <label for="city-region">Region</label>
+                <v-select :options="regionOptions" @search="onRegionSearch" :on-change="onChange" v-model.trim="$v.form.region.$model"  @blur="$v.form.region.$touch()" >
+                    <template slot="no-options">
+                        type to search Region..
+                    </template>
+                </v-select>
             </div>
             <div class="error" v-if="!$v.form.region.required">This field must not be empty.</div>
             
             <div class="form-group" :class="{'form-group--error': $v.form.population.$error, 'form-group--loading': $v.form.population.$pending}">
-                <label for="city-create-population">Population</label>
-                <input type="number" class="form-control" id="city-create-population" v-model.trim.lazy.number="$v.form.population.$model" @blur="$v.form.population.$touch()">
+                <label for="city-population">Population</label>
+                <input type="number" class="form-control" id="city-population" v-model.trim.lazy.number="$v.form.population.$model" @blur="$v.form.population.$touch()">
             </div>
             <div class="error" v-if="!$v.form.population.required">This field must not be empty.</div>
             <div class="error" v-if="!$v.form.population.numeric">Only numeric (non-negative) value is allowed.</div>
@@ -37,6 +39,8 @@
                 <b-button type="submit" variant="primary" :disabled="$v.$invalid">Submit</b-button>
             </b-form-group>
         </b-form>
+
+        {{ $v.form.name }}
     </div>  
 </template>
 
@@ -62,20 +66,10 @@ export default {
             id: {
                 required,
                 numeric,
-                minValue: minValue(1),
-                unique(val) { 
-                    if (val === '') return true
-                    return axios.get('/cities.json?orderBy="id"&equalTo="' + val + '"')
-                        .then(res => { return Object.keys(res.data).length === 0 })
-                }
+                minValue: minValue(1)
             },
             name: {
-                required,
-                unique(val) { 
-                    if (val === '') return true
-                    return axios.get('/cities.json?orderBy="name"&equalTo="' + val + '"')
-                        .then(res => { return Object.keys(res.data).length === 0 })
-                }
+                required
             },
             region: {
                 required
@@ -88,7 +82,8 @@ export default {
     },
     watch: {
         idToEdit() {
-            this.fetchRegionDropdown();
+            // Enable this to pre-populated the region dropdown instead of using AJAX search
+            // this.fetchRegionDropdown();
             this.getData();
         }
     },
@@ -105,7 +100,6 @@ export default {
             axios.put(`/cities/${this.idToEdit}.json`, this.form)
                 .then(res => {
                     this.$emit('cityEdited');
-                    this.resetForm();
                 })
                 .catch(error => console.log(error));
         },

@@ -28,10 +28,9 @@
             :items="items"
             :fields="fields"
             :filter="filter"
-            :sort-by.sync="sortBy"
-            :sort-desc.sync="sortDesc"
             :current-page="currentPage"
             :per-page="perPage">
+            
             <template slot="details" slot-scope="row">                
                 <!-- Button to open up ROW DETAILS -->
                 <b-button size="sm" variant="link" @click.stop="row.toggleDetails">
@@ -67,12 +66,12 @@
         <!-- MODAL BOXES -->        
         <!-- ADD modal box (pop-up) -->    
         <b-modal v-model="showCreateModal" title="Add New City" hide-footer>
-            <app-city-create @cityAdded="refresh(this.fetchUrl)"></app-city-create>
+            <app-city-create @cityAdded="refresh(fetchUrl)"></app-city-create>
         </b-modal>
 
         <!-- EDIT modal box (pop-up) -->    
         <b-modal v-model="showEditModal" :title="editModalTitle" hide-footer>
-            <app-city-edit :idToEdit="idToEdit" @cityEdited="refresh(this.fetchUrl)"></app-city-edit>
+            <app-city-edit :idToEdit="idToEdit" @cityEdited="refresh(fetchUrl)"></app-city-edit>
         </b-modal>
         
         <!-- DELETE modal box (pop-up) -->    
