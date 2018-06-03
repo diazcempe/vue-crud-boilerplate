@@ -14,7 +14,7 @@ export const formMixin = {
         };
     },    
     methods: {        
-        populateRegionDropdown() {
+        fetchRegionDropdown() {
             return axios.get('/regions.json')
                         .then(res => {
                             const resultArray = [];
@@ -23,7 +23,7 @@ export const formMixin = {
                                 resultArray.push(res.data[key]);
                             };
                             
-                            this.regionOptions = resultArray.map(d => ({ value: d.name, text: d.name }))
+                            this.regionOptions = resultArray.map(d => ({ value: d.name, label: d.name }))
                             
                             // Set default selected value of the dropdown to be the first record 
                             if (resultArray.length > 0) this.form.region = resultArray[0].name; 

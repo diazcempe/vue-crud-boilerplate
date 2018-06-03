@@ -50,9 +50,10 @@ export default {
         color: #f57f6c;
     }
 
-    .form-group--loading .form__input {
-    border-image-slice: 1;
-    animation: loading-frame 1s infinite; }
+    .form-group--loading .form-control {
+        border-image-slice: 1;
+        animation: loading-frame 1s infinite; 
+    }
 
     .error {
         font-size: 0.75rem;
@@ -63,22 +64,29 @@ export default {
         margin-bottom: 0.9375rem;
     }
 
+    @keyframes loading-frame {
+        0% { border-color: #3acfd5; }
+        50% { border-color: #3a4ed5; }
+        100% { border-color: #3acfd5; } 
+    }
+
     @keyframes shakeError {
-    0% {
-        transform: translateX(0); }
-    15% {
-        transform: translateX(0.375rem); }
-    30% {
-        transform: translateX(-0.375rem); }
-    45% {
-        transform: translateX(0.375rem); }
-    60% {
-        transform: translateX(-0.375rem); }
-    75% {
-        transform: translateX(0.375rem); }
-    90% {
-        transform: translateX(-0.375rem); }
-    100% {
-        transform: translateX(0); } 
+        0% { transform: translateX(0); }
+        15% { transform: translateX(0.375rem); }
+        30% { transform: translateX(-0.375rem); }
+        45% { transform: translateX(0.375rem); }
+        60% { transform: translateX(-0.375rem); }
+        75% { transform: translateX(0.375rem); }
+        90% { transform: translateX(-0.375rem); }
+        100% { transform: translateX(0); } 
+    }
+
+    .fa-icon {
+        width: auto;
+        height: 1.4em; /* or any other relative font sizes */
+
+        /* You would have to include the following two lines to make this work in Safari */
+        max-width: 100%;
+        max-height: 100%;
     }
 </style>

@@ -19,9 +19,11 @@
             
             <div class="form-group" :class="{'form-group--error': $v.form.region.$error}">
                 <label for="city-create-region">Region</label>
-                <select class="form-control" id="city-create-region" v-model.trim.lazy="$v.form.region.$model">
-                    <option v-for="(region, index) in regionOptions" :key="region.value" :value="region.value" :selected="index === 0">{{ region.text }}</option>
-                </select>
+                <v-select :options="regionOptions" @search="onRegionSearch" v-model.trim="$v.form.region.$model" @blur="$v.form.region.$touch()" >
+                    <template slot="no-options">
+                        type to search Region..
+                    </template>
+                </v-select>
             </div>
             <div class="error" v-if="!$v.form.region.required">This field must not be empty.</div>
             
@@ -46,7 +48,7 @@ import { required, numeric, minValue } from 'vuelidate/lib/validators'
 import { formMixin } from './mixin'
 
 export default {
-    mixins: [formMixin],        
+    mixins: [formMixin],    
     validations: {
         form: {
             id: {
@@ -77,12 +79,27 @@ export default {
         }
     },
     methods: {
+        // Async AJAX Dropdown search
+        onRegionSearch(search, loading) {   
+            loading(true);
+            axios.get('/regions.json?orderBy="name"&startAt="' + search + '"&endAt="' + search + '\uf8ff' + '"')
+                .then(res => {
+                    const resultArray = [];
+                    for (let key in res.data){                                
+                        res.data[key].firebaseId = key; // add firebaseId prop to the data for delete/edit purposes
+                        resultArray.push(res.data[key]);
+                    };
+
+                    this.regionOptions = resultArray.map(region => ({value: region.name, label: region.name }));
+                    loading(false);
+                })
+        },
         onSubmit() {
             axios.post('/cities.json', this.form)
                 .then(res => {
                     this.$emit('cityAdded');
                     this.resetForm();
-                })
+                }) 
                 .catch(error => console.log(error));
         },
         resetForm() {
@@ -93,7 +110,8 @@ export default {
         }
     },
     created() {
-        this.populateRegionDropdown();
+        // Enable this to pre-populated the region dropdown instead of using AJAX search
+        //this.fetchRegionDropdown();
     }
 };
 </script>

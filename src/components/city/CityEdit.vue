@@ -88,13 +88,12 @@ export default {
     },
     watch: {
         idToEdit() {
-            this.populateRegionDropdown();
+            this.fetchRegionDropdown();
             this.getData();
         }
     },
     methods: {
         getData() {
-            // Populate form data by data fetched from the server by ID
             axios.get(`/cities/${this.idToEdit}.json`)
                 .then(res => {
                     this.form = Object.assign({}, res.data);

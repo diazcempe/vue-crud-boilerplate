@@ -15,7 +15,9 @@
     "bootstrap-vue": "latest",
     "popper.js": "^1.12.9",
     "vue": "^2.5.2",
+    "vue-awesome": "^3.0.0",
     "vue-router": "^3.0.1",
+    "vue-select": "^2.4.0",
     "vuelidate": "^0.7.4"
   },
   "devDependencies": {

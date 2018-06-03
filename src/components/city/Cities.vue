@@ -32,19 +32,19 @@
             :sort-desc.sync="sortDesc"
             :current-page="currentPage"
             :per-page="perPage">
-            <template slot="actions" slot-scope="row">
-
-                <!-- Button to open up EDIT, DELETE modal box -->
-                <b-button size="sm" variant="outline-info" @click.stop="openEditModal(row.item.firebaseId, row.item.name)">Edit</b-button>
-                <b-button size="sm" variant="outline-danger" @click.stop="openDeleteModal(row.item.firebaseId, row.item.name)">Delete</b-button>
-
+            <template slot="details" slot-scope="row">                
                 <!-- Button to open up ROW DETAILS -->
                 <b-button size="sm" variant="link" @click.stop="row.toggleDetails">
-                    {{ row.detailsShowing ? 'Hide' : 'Show' }} Details
+                    <icon name="minus" v-if="row.detailsShowing" style="color: #17a2b8"></icon>
+                    <icon name="plus" v-else style="color: #17a2b8"></icon>
                 </b-button>
-
             </template>
-            
+            <template slot="actions" slot-scope="row">
+                <!-- Button to open up EDIT, DELETE modal box -->
+                <b-button size="sm" variant="link" @click.stop="openEditModal(row.item.firebaseId, row.item.name)"><icon name="edit" style="color: #17a2b8"></icon></b-button>
+                <b-button size="sm" variant="link" @click.stop="openDeleteModal(row.item.firebaseId, row.item.name)"><icon name="trash-alt" style="color: #f04124"></icon></b-button>
+            </template>            
+
             <!-- Reserved slot for ROW DETAILS. Will be printed for every row. -->
             <template slot="row-details" slot-scope="row">
                 <b-card class="text-left">
@@ -98,11 +98,12 @@ export default {
         return {
             fetchUrl: '/cities.json',
             fields: [
+                { key: 'details', label: '', thStyle: { width: '57px' } },
                 { key: 'id', sortable: false },
                 { key: 'name', sortable: true },
                 { key: 'region', sortable: true },
                 { key: 'population', sortable: true },
-                { key: 'actions', label: 'Actions' }
+                { key: 'actions', label: '' }
             ],
         }
     },
@@ -114,7 +115,7 @@ export default {
         }
     },
     created() {
-        this.populateTable(this.fetchUrl);
+       this.populateTable(this.fetchUrl);
     }
 }
 </script>
